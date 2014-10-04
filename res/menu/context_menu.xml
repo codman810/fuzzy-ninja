@@ -1,0 +1,22 @@
+
+    <menu xmlns:android="http://schemas.android.com/apk/res/android"> <item
+        android:id="@+id/edit"
+        android:title="Edit"
+    />
+ 
+    <item
+        android:id="@+id/delete"
+        android:title="Delete"
+       
+    />
+     <item
+        android:id="@+id/add"
+        android:title="Add Subtask"
+       
+    />
+ 
+    <item
+        android:id="@+id/complete"
+        android:title="Complete"
+    />
+    </menu>

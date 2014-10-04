@@ -29,6 +29,11 @@ private EditText description;
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		// Apply the adapter to the spinner
 		spinner.setAdapter(adapter);
+		
+		editName=(EditText)findViewById(R.id.editName);
+		datePick=(DatePicker)findViewById(R.id.datePicker1);
+		timePick=(TimePicker)findViewById(R.id.timePicker1);
+		description=(EditText)findViewById(R.id.description);
 	}
 	public void sendMessage(View view) 
 	{

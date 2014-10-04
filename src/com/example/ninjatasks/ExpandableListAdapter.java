@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -18,7 +19,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	// child data in format of header title, child title
 	private HashMap<String, List<String>> _listDataChild;
 	private HashMap<String, List<String>> _listDataChild2;
-	
+	private ImageView image;
 	
 	public ExpandableListAdapter(Context context, List<String> listDataHeader,
 			HashMap<String, List<String>> listChildData) {
@@ -74,10 +75,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public int getGroupCount() {
 		return this._listDataHeader.size();
+		
 	}
 
 	@Override
 	public long getGroupId(int groupPosition) {
+		
 		return groupPosition;
 	}
 
@@ -90,11 +93,19 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = infalInflater.inflate(R.layout.list_group, null);
 		}
-
+		image=(ImageView)convertView.findViewById(R.id.expandableIcon);
 		TextView lblListHeader = (TextView) convertView
 				.findViewById(R.id.lblListHeader);
 		lblListHeader.setTypeface(null, Typeface.BOLD);
 		lblListHeader.setText(headerTitle);
+		if(getChildrenCount(groupPosition)!=0){
+			int imageResourceId = isExpanded ? android.R.drawable.arrow_up_float : android.R.drawable.arrow_down_float;
+			image.setImageResource(imageResourceId);
+		 
+			image.setVisibility(View.VISIBLE);
+		} else {
+			image.setVisibility(View.INVISIBLE);
+		}
 
 		return convertView;
 	}

@@ -10,6 +10,7 @@ import android.provider.BaseColumns;
 import android.app.Activity;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.ListView;
 import android.content.Context;
@@ -19,9 +20,14 @@ import android.support.v4.widget.CursorAdapter;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.view.ActionMode;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ExpandableListView;
@@ -59,14 +65,16 @@ public class MainActivity extends Activity {
 
 		// setting list adapter
 		expListView.setAdapter(listAdapter);
-
+		
+		registerForContextMenu(expListView);
+		
 		// Listview Group click listener
 		expListView.setOnGroupClickListener(new OnGroupClickListener() {
 
 		@Override
 		public boolean onGroupClick(ExpandableListView parent, View v,
 				int groupPosition, long id) {
-
+			
 				return false;
 				}
 		});
@@ -84,8 +92,8 @@ public class MainActivity extends Activity {
 		
 		
 	}
-	
-
+		
+		
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -135,6 +143,61 @@ public class MainActivity extends Activity {
 				listDataChild.put(listDataHeader.get(0), top250); // Header, Child data
 				listDataChild.put(listDataHeader.get(1), nowShowing);
 				listDataChild.put(listDataHeader.get(2), comingSoon);
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		  MenuInflater inflater = getMenuInflater();
+		  ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+
+		    int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+		    int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+		    int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
+
+		    // Show context menu for groups
+		    if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+		    	inflater.inflate(R.menu.context_menu, menu);
+		    } else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+		    	inflater.inflate(R.menu.context_menusub, menu);
+		    }
+		  
+	}
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item
+	            .getMenuInfo();
+
+	    int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+	    int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+	    int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
+
+	    if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+	    	switch (item.getItemId()) {
+		    case R.id.edit:
+		      Intent i = new Intent(MainActivity.this,EditTask.class);
+		      i.putExtra((String) listAdapter.getGroup(groupPosition), true);
+		      Log.v("name",(String) listAdapter.getGroup(groupPosition));
+		      startActivity(i);
+		      return true;
+		    case R.id.delete:
+		    	 return true;
+		    case R.id.add:
+		    	 return true;
+		    case R.id.complete:
+		    	 return true;
+		    default:
+			      return super.onContextItemSelected(item);
+			  }
+		    	
+
+	    } else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+	        // do someting with child
+	    }
+		return false;
+
+		
 	}
 
 }
