@@ -1,17 +1,24 @@
 package com.fuzzyninja.tasker;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
 public class MainActivity extends ActionBarActivity {
 
+	private static Database itemDatabase = null;
+	protected static int REQUEST_UPDATE = 1;	
+	protected static int REQUEST_INSERT = 2;
+	protected static int REQUEST_DELETE = 3;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        setItemDatabase(new Database(this));
     }
 
 
@@ -33,4 +40,14 @@ public class MainActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+	public static Database getItemDatabase() {
+		return itemDatabase;
+	}
+
+
+	public void setItemDatabase(Database itemDatabase) {
+		MainActivity.itemDatabase = itemDatabase;
+	}
 }

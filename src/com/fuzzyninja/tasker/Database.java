@@ -1,10 +1,12 @@
+package com.fuzzyninja.tasker;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class Database extends SQLiteOpenHelper {
 	public static final int DATABASE_VERSION = 1;
-    public static final String TABLE_NAME = "Tasker.db";
+    public static final String TABLE_NAME = "Tasker";
     private static final String DELETED_TABLE_NAME = "Deleted";
     
     public Database(Context context) {
@@ -27,21 +29,21 @@ public class Database extends SQLiteOpenHelper {
     private void createTable(SQLiteDatabase dbItems){
 		String createSQL = "CREATE TABLE " + TABLE_NAME + "(" +
 				"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-				"Name TEXT," + "Due TEXT," + "Id TEXT," + 
-				"Parent TEXT," + "Subtasks TEXT," + "Subdone TEXT," + 
-				"Completed TEXT," + "Notes TEXT," + "Defcon TEXT);";
+				"Name TEXT," + "Due INTEGER," + "Id INTEGER," + 
+				"Parent TEXT," + "Subtasks INTEGER," + "Subdone INTEGER," + 
+				"Completed INTEGER," + "Notes TEXT," + "Defcon INTEGER);";
 		dbItems.execSQL(createSQL);
 		String insertSQL="INSERT INTO " + TABLE_NAME +
 				" (Name, Due, Id, Parent, Subtasks, Subdone, Completed, Notes, Defcon) " +
 				" SELECT 'test' AS Name, '21' AS Due, 'math' AS Parent, '1' AS Subtasks, '0' AS Subdone" +
-				" 'False' AS Completed, 'No' AS Notes, '3' AS Defcon"+
-				" UNION SELECT 'test2','Sept 16','career','0','0','True','','1';";
+				" '0' AS Completed, 'No' AS Notes, '3' AS Defcon"+
+				" UNION SELECT 'test2','Sept 16','career','0','0','1','','1';";
 		dbItems.execSQL(insertSQL);
 		String createSQL2 = "CREATE TABLE " + DELETED_TABLE_NAME + "(" +
 				"_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-				"Name TEXT," + "Due TEXT," + "Id TEXT," + 
-				"Parent TEXT," + "Subtasks TEXT," + "Subdone TEXT," + 
-				"Completed TEXT," + "Notes TEXT," + "Defcon TEXT);";
+				"Name TEXT," + "Due INTEGER," + "Id INTEGER," + 
+				"Parent TEXT," + "Subtasks INTEGER," + "Subdone INTEGER," + 
+				"Completed INTEGER," + "Notes TEXT," + "Defcon INTEGER);";
 		dbItems.execSQL(createSQL2);
 		
 	}

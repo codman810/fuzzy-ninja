@@ -1,10 +1,15 @@
+package com.fuzzyninja.tasker;
 import java.util.ArrayList;
 import java.util.Date;
+
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 
 
 public class Task {
 	//Name
 	private String Name = new String();
+	private String Parent = new String();
 	//Time Due
 	private long due;
 	//Subtasks
@@ -25,10 +30,12 @@ public class Task {
 		this.Name = "You should put something here...";
 		this.due = 0;
 		this.defcon = 2;
+		this.Parent = null;
 	}
 	
 	public Task(String name){
 		this.Name = name;
+		this.Parent = null;
 	}
 	
 	
@@ -53,6 +60,7 @@ public class Task {
 		if(id < 1){
 			numTasks++;
 			sub.id = this.id+1;
+			sub.Parent = this.Name;
 			this.tasks.add(sub);
 		}
 	}
@@ -61,6 +69,43 @@ public class Task {
 		this.completed = !this.completed;
 	}
 	
+	public void add(){
+		//(Name, Due, Id, Parent, Subtasks, Subdone, Completed, Notes, Defcon)
+		SQLiteDatabase db = MainActivity.getItemDatabase().getWritableDatabase();
+		ContentValues cv = new ContentValues();
+		//this.due, this.Parent, this.numTasks, this.numDone,
+		//this.completed, this.notes, this.defcon
+		cv.put("Name", this.Name);
+		cv.put("Due", this.due);
+		cv.put("Id", this.id);
+		cv.put("Parent", this.Parent);
+		cv.put("Subtasks", this.numTasks);
+		cv.put("Subdone", this.numDone);
+		cv.put("Completed", this.completed);
+		cv.put("Notes", this.notes.toString());
+		cv.put("Defcon", this.defcon);
+		db.insert("Tasker",null,cv);
+	}
+	
+	public void delete(){
+		SQLiteDatabase db = MainActivity.getItemDatabase().getWritableDatabase();
+		db.delete("Tasker", "Name = '" + this.Name + "';", null);
+	}
+	
+	public void update(){
+		SQLiteDatabase db = MainActivity.getItemDatabase().getWritableDatabase();
+		ContentValues cv = new ContentValues();
+		cv.put("Name", this.Name);
+		cv.put("Due", this.due);
+		cv.put("Id", this.id);
+		cv.put("Parent", this.Parent);
+		cv.put("Subtasks", this.numTasks);
+		cv.put("Subdone", this.numDone);
+		cv.put("Completed", this.completed);
+		cv.put("Notes", this.notes.toString());
+		cv.put("Defcon", this.defcon);
+		db.update("Tasker", cv, "Name = '" + this.Name + "';", null);
+	}
 	
 	//Getters
 	public Date timeLeft(){
@@ -97,6 +142,10 @@ public class Task {
 	
 	public int getId(){
 		return this.id;
+	}
+	
+	public String getParentName(){
+		return this.Parent;
 	}
 	
 }
