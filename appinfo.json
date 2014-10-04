@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "ydoc810@aol.com",
+    "longName": "fuzzy-ninja",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "shortName": "fuzzy-ninja",
+    "uuid": "263fed08-b5a9-4bba-bfeb-6353b98b610d",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
