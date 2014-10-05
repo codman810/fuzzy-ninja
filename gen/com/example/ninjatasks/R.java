@@ -30,27 +30,28 @@ public final class R {
     }
     public static final class id {
         public static final int ScrollView01=0x7f090002;
-        public static final int action_settings=0x7f090025;
-        public static final int add=0x7f090020;
+        public static final int action_settings=0x7f090026;
+        public static final int add=0x7f090021;
         public static final int addTask=0x7f090001;
-        public static final int complete=0x7f090021;
-        public static final int completeSub=0x7f090024;
+        public static final int complete=0x7f090022;
+        public static final int completeSub=0x7f090025;
         public static final int datePicker1=0x7f090006;
         public static final int datePicker1Edit=0x7f090011;
         public static final int defconDrop=0x7f09000a;
         public static final int defconDropEdit=0x7f090015;
         public static final int defconLevel=0x7f090009;
         public static final int defconLevelEdit=0x7f090014;
-        public static final int delete=0x7f09001f;
-        public static final int deleteSub=0x7f090023;
+        public static final int delete=0x7f090020;
+        public static final int deleteSub=0x7f090024;
         public static final int description=0x7f09000c;
         public static final int descriptionEdit=0x7f090017;
+        public static final int done=0x7f09001e;
         public static final int dueListHeader=0x7f09001b;
         public static final int dueListItem=0x7f09001d;
-        public static final int edit=0x7f09001e;
+        public static final int edit=0x7f09001f;
         public static final int editName=0x7f090004;
         public static final int editNameEdit=0x7f09000f;
-        public static final int editSub=0x7f090022;
+        public static final int editSub=0x7f090023;
         public static final int expandableIcon=0x7f09001a;
         public static final int lblListHeader=0x7f090019;
         public static final int lblListItem=0x7f09001c;

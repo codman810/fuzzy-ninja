@@ -2,6 +2,7 @@ package com.example.ninjatasks;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,7 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 
-public class Task {
+public class Task implements Comparable<Task>{
 	//Name
 	private String Name = new String();
 	private String Parent;
@@ -149,7 +150,27 @@ public class Task {
 		}
 		return s;
 	}
-	
+	public double completion(){
+		double done = 0;
+		double total = 0;
+		if(this.getId()==0){
+			List<Task> childs = Task.getChildTasks();
+			for(Task t: childs){
+				if(this.getName().equals(t.getParentName())){
+					total++;
+					if(t.completed() == 1)
+						done++;
+				}
+			}
+			if(done == 0|| total == 0)
+				return 0;
+			else
+				return (done*100)/total;
+		}
+		else{
+			return this.completed();
+		}
+	}
 	public int completed(){
 		return this.completed;
 	}
@@ -289,5 +310,28 @@ public class Task {
 	       // return tasks
 	       return taskChild;
 	   }
+
+	@Override
+    public int compareTo(Task t) {
+        return Comparators.DUE.compare(this, t);
+    }
+
+
+    public static class Comparators {
+
+        public static Comparator<Task> NAME = new Comparator<Task>() {
+            @Override
+            public int compare(Task o1, Task o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        };
+        public static Comparator<Task> DUE = new Comparator<Task>() {
+            @Override
+            public int compare(Task o1, Task o2) {
+                return (int)((int)(o1.getDue()*1000) - (int)(o2.getDue()*1000));
+            }
+        };
+        
+    }
 
 }

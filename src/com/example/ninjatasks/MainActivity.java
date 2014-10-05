@@ -2,6 +2,7 @@ package com.example.ninjatasks;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -136,6 +137,9 @@ public class MainActivity extends Activity {
 					}
 				listDataChild.put(t, temp);
 			}
+			Collections.sort(listDataHeader, Task.Comparators.DUE);
+			for(Task t: listDataHeader)
+				Log.v("sorting",t.getName());
 			listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
 			expListView.setAdapter(listAdapter);
 		}
@@ -254,8 +258,9 @@ public class MainActivity extends Activity {
 		    	 return true;
 		    case R.id.completeSub:
 		    	((Task)listAdapter.getChild(groupPosition,childPosition)).setCompleted(1);
-		    	
-		    	 return true;
+		    	((Task)listAdapter.getChild(groupPosition,childPosition)).update(((Task)listAdapter.getChild(groupPosition,childPosition)).getName());
+		    	prepareListData();
+		    	return true;
 		    default:
 			      return super.onContextItemSelected(item);
 			  }

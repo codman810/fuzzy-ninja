@@ -50,6 +50,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 		final String childText = ((Task)getChild(groupPosition, childPosition)).getName();
 		final String childDue = ((Task)getChild(groupPosition, childPosition)).timeLeft();
+		int didIt = ((Task)getChild(groupPosition, childPosition)).completed();
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this._context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -60,9 +61,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				.findViewById(R.id.lblListItem);
 		TextView timeDue = (TextView) convertView
 				.findViewById(R.id.dueListItem);
-
+		String done;
+		if(didIt == 1){
+		done="Completed!";
+		}
+		else{
+			done="";
+		}
+		
 		txtListChild.setText(childText);
-		timeDue.setText("Due in:"+childDue);
+		timeDue.setText("Due in:"+childDue+"\t" + done);
 		return convertView;
 	}
 
@@ -113,6 +121,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
 		String headerTitle = ((Task)getGroup(groupPosition)).getName();
+		double percentfinished = ((Task)getGroup(groupPosition)).completion();
 		if (convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) this._context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -123,8 +132,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 				.findViewById(R.id.lblListHeader);
 		TextView headDue = (TextView) convertView
 				.findViewById(R.id.dueListHeader);
+		
+		String percent = percentfinished+"% Done";
 		lblListHeader.setTypeface(null, Typeface.BOLD);
-		headDue.setText("Due in:"+((Task)getGroup(groupPosition)).timeLeft());
+		headDue.setText("Due in:"+((Task)getGroup(groupPosition)).timeLeft()+"\t\t\t\t"+percent);
 		lblListHeader.setText(headerTitle);
 		if(getChildrenCount(groupPosition)!=0){
 			int imageResourceId = isExpanded ? android.R.drawable.arrow_up_float : android.R.drawable.arrow_down_float;
