@@ -1,6 +1,8 @@
 package com.example.ninjatasks;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,57 +45,100 @@ public class MainActivity extends Activity {
 
 	
 	//Expandable List
-	ExpandableListAdapter listAdapter;
-	ExpandableListView expListView;
-	List<String> listDataHeader;
-	HashMap<String, List<String>> listDataChild;
-	HashMap<String, List<String>> listDataChild2;
+	private ExpandableListAdapter listAdapter;
+	private ExpandableListView expListView;
+	private List<Task> listDataHeader;
+	private HashMap<Task, List<Task>> listDataChild;
+
 	
-	
+	private static Database itemDatabase = null;
+	protected static int REQUEST_UPDATE = 1;	
+	protected static int REQUEST_INSERT = 2;
+	protected static int REQUEST_DELETE = 3;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		setItemDatabase(new Database(this));
 		
 		// get the listview
 		expListView = (ExpandableListView) findViewById(R.id.lvExp);
-
+		
 		// preparing list data
 		prepareListData();
-
-		listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
-
-		// setting list adapter
-		expListView.setAdapter(listAdapter);
+		
 		
 		registerForContextMenu(expListView);
 		
-		// Listview Group click listener
-		expListView.setOnGroupClickListener(new OnGroupClickListener() {
-
-		@Override
-		public boolean onGroupClick(ExpandableListView parent, View v,
-				int groupPosition, long id) {
-			
-				return false;
-				}
-		});
-
-		// Listview on child click listener
-		expListView.setOnChildClickListener(new OnChildClickListener() {
-
-				@Override
-				public boolean onChildClick(ExpandableListView parent, View v,
-					int groupPosition, int childPosition, long id) {
-					
-					return false;
-					}
-				});
-		
 		
 	}
-		
-		
+	@Override
+	protected void onActivityResult(int reqCode, int resCode, Intent data){
+		if(reqCode==REQUEST_UPDATE && data!=null){
+			if(resCode==RESULT_OK){
+				String[] results = data.getExtras().getStringArray("results");
+				
+				prepareListData();		
+			}
+		}
+		else if(reqCode==REQUEST_INSERT && data!=null){
+			if(resCode==RESULT_OK){
+				String[] results = data.getExtras().getStringArray("results");
+				long time = data.getExtras().getLong("date");
+				List<Task> temp = new ArrayList<Task>();
+				Task task = new Task(results[0]);
+				task.setDefcon(Integer.parseInt(results[1]));
+				if(results[3].equals("1")){
+					task.setId(1);
+					task.setParent(results[4]);
+				}
+				task.setDue(time);
+				task.addNote(results[2]);
+				task.add();
+				if(results[3].equals("0")){
+					listDataHeader.add(task);					
+				}
+				else{
+						Task parent = Task.getTask(task.getParentName());
+						parent.addSubTask(task);
+						if(listDataChild.get(parent) == null){							
+							temp.add(task);
+							listDataChild.put(parent, temp);
+						}
+						else{
+							temp=listDataChild.get(parent);
+							temp.add(task);
+							listDataChild.put(parent,temp);
+						}
+					}
+				
+				
+				}
+			prepareListData();	
+			}
+			
+	}		
+	//make list
+		private void prepareListData() {
+			Log.v("here","pepp");
+			listDataHeader = new ArrayList<Task>();
+			listDataChild = new HashMap<Task, List<Task>>();
+			List<Task> parents =Task.getParentTasks();
+			List<Task> children =Task.getChildTasks();
+			for(Task t: parents){
+				listDataHeader.add(t);
+				Log.v("namesees",t.getName());
+				List<Task> temp = new ArrayList<Task>();
+					for(Task s: children){
+						if(s.getParentName().equals(t.getName())){
+							temp.add(s);
+						}
+					}
+				listDataChild.put(t, temp);
+			}
+			listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+			expListView.setAdapter(listAdapter);
+		}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -103,47 +148,40 @@ public class MainActivity extends Activity {
 	public void sendMessage(View view) 
 	{
 	    Intent intent = new Intent(MainActivity.this, AddTask.class);
-	    startActivity(intent);
+	    intent.putExtra("TaskName","NA");
+	    intent.putExtra("itemContents",0);
+	    startActivityForResult(intent,REQUEST_INSERT);
 	}
-	//make list
-	private void prepareListData() {
-		listDataHeader = new ArrayList<String>();
-		listDataChild = new HashMap<String, List<String>>();
-		listDataChild2 = new HashMap<String, List<String>>();
+
+	private void exampleData(){
+		
 		// Adding child data
-				listDataHeader.add("Top 250");
-				listDataHeader.add("Now Showing");
-				listDataHeader.add("Coming Soon..");
-
-				// Adding child data
-				List<String> top250 = new ArrayList<String>();
-				top250.add("The Shawshank Redemption");
-				top250.add("The Godfather");
-				top250.add("The Godfather: Part II");
-				top250.add("Pulp Fiction");
-				top250.add("The Good, the Bad and the Ugly");
-				top250.add("The Dark Knight");
-				top250.add("12 Angry Men");
-
-				List<String> nowShowing = new ArrayList<String>();
-				nowShowing.add("The Conjuring");
-				nowShowing.add("Despicable Me 2");
-				nowShowing.add("Turbo");
-				nowShowing.add("Grown Ups 2");
-				nowShowing.add("Red 2");
-				nowShowing.add("The Wolverine");
-
-				List<String> comingSoon = new ArrayList<String>();
-				comingSoon.add("2 Guns");
-				comingSoon.add("The Smurfs 2");
-				comingSoon.add("The Spectacular Now");
-				comingSoon.add("The Canyons");
-				comingSoon.add("Europa Report");
-
-				listDataChild.put(listDataHeader.get(0), top250); // Header, Child data
-				listDataChild.put(listDataHeader.get(1), nowShowing);
-				listDataChild.put(listDataHeader.get(2), comingSoon);
+		Task task = new Task("Example");
+		Task subtask = new Task("SubTask");
+        task.setDefcon(0);
+	    task.setId(1);
+	    Calendar cal = Calendar.getInstance();
+	    cal.set(2014, Calendar.OCTOBER, 20,9,30);
+	    Date d = cal.getTime();
+	    task.setDue(d.getTime());
+	    task.addNote("Hello World!");
+	    subtask.setDefcon(2);
+	    subtask.setId(1);
+	    Calendar cal2 = Calendar.getInstance();
+	    cal2.set(2014, Calendar.OCTOBER, 18,10,15);
+	    Date d2 = cal.getTime();
+	    subtask.setDue(d2.getTime());
+	    subtask.setParent(task.getName());
+	    subtask.addNote("Hola!");
+	    task.addSubTask(subtask);
+	    	    	
+		listDataHeader.add(task);
+		// Adding child data
+		List<Task> ex1 = new ArrayList<Task>();
+		ex1.add(subtask);
+		listDataChild.put(listDataHeader.get(0), ex1); // Header, Child data
 	}
+	
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
@@ -177,27 +215,62 @@ public class MainActivity extends Activity {
 	    	switch (item.getItemId()) {
 		    case R.id.edit:
 		      Intent i = new Intent(MainActivity.this,EditTask.class);
-		      i.putExtra((String) listAdapter.getGroup(groupPosition), true);
-		      Log.v("name",(String) listAdapter.getGroup(groupPosition));
-		      startActivity(i);
+		      i.putExtra("TaskName", ((Task)listAdapter.getGroup(groupPosition)).getName());		     
+		      startActivityForResult(i,REQUEST_UPDATE);
 		      return true;
 		    case R.id.delete:
+		    	((Task)listAdapter.getGroup(groupPosition)).delete();
+		    	prepareListData();
+		    	//delete subs
 		    	 return true;
 		    case R.id.add:
+		    	Intent intent = new Intent(MainActivity.this, AddTask.class);
+		    	intent.putExtra("itemContents",1);
+		    	intent.putExtra("TaskName", ((Task)listAdapter.getGroup(groupPosition)).getName());
+			    startActivityForResult(intent,REQUEST_INSERT);
 		    	 return true;
 		    case R.id.complete:
+		    	((Task)listAdapter.getGroup(groupPosition)).delete();
+		    	prepareListData();
+		    	//delete subs
 		    	 return true;
 		    default:
 			      return super.onContextItemSelected(item);
 			  }
 		    	
 
-	    } else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-	        // do someting with child
+	    } else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {	    	
+	    	switch (item.getItemId()) {
+	    	
+		    case R.id.editSub:
+		      Intent i = new Intent(MainActivity.this,EditTask.class);
+		      i.putExtra("TaskName", ((Task)listAdapter.getChild(groupPosition,childPosition)).getName());			   
+		      startActivityForResult(i,REQUEST_UPDATE);
+		      return true;
+		    case R.id.deleteSub:
+		    	((Task)listAdapter.getChild(groupPosition,childPosition)).delete();
+		    	Log.v("apples",((Task)listAdapter.getChild(groupPosition,childPosition)).getName());
+		    	prepareListData();
+		    	 return true;
+		    case R.id.completeSub:
+		    	((Task)listAdapter.getChild(groupPosition,childPosition)).setCompleted(1);
+		    	
+		    	 return true;
+		    default:
+			      return super.onContextItemSelected(item);
+			  }
 	    }
 		return false;
-
 		
 	}
+	public static Database getItemDatabase() {
+		return itemDatabase;
+	}
+
+
+	public void setItemDatabase(Database itemDatabase) {
+		MainActivity.itemDatabase = itemDatabase;
+	}
+	
 
 }
